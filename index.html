@@ -270,6 +270,19 @@ h1,h2,h3,p{margin:0}
 .stop.done .stop-in{background:var(--gc);color:var(--on-o)}
 .stop.cur{animation:beacon 1.6s infinite}
 .stop .mascot{position:absolute;top:-42px;left:50%;margin-left:-26px;width:52px;height:52px;animation:bob .9s infinite alternate;pointer-events:none}
+.sign.ctest{display:flex;gap:10px;align-items:center;text-align:left;white-space:normal;width:max-content;max-width:calc(100% - 20px);background:#FFFFFF;color:#12262B;border-radius:16px;padding:8px 16px;z-index:2;--gc:#F2A900}
+.sign.ctest svg{flex:none;width:26px;height:26px;fill:currentColor}
+.sign.ctest[disabled]{background:rgba(255,255,255,.3);color:#FFFFFF;box-shadow:none;cursor:default}
+.sign.ctest.due{background:var(--o3);color:var(--on-o3);animation:beacon 1.6s infinite}
+.sign.ctest.ok{background:var(--good-s);color:#FFFFFF}
+.tests ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.tests li.hd{font-family:var(--display);font-weight:800;margin-top:6px}
+.trow{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;padding:8px 12px;min-height:48px;border-radius:14px;background:var(--surface2);border:2px solid var(--line);font-weight:700;font-size:.92rem}
+.trow span{flex:none;font-size:.8rem;border-radius:999px;padding:2px 10px;background:var(--line);color:var(--ink);white-space:nowrap}
+.trow[disabled]{cursor:default;color:var(--muted);font-weight:400}
+.trow.due{border-color:var(--o3)} .trow.due span{background:var(--o3);color:var(--on-o3)}
+.trow.ok span{background:var(--good-s);color:#FFFFFF}
+.trow.ch{background:var(--surface);font-family:var(--display)}
 .stop.exam{border-radius:24px;background:var(--o3);color:var(--on-o3)} .stop.exam svg{width:42px;height:42px;fill:currentColor}
 .stop-l{position:absolute;transform:translateY(-50%);display:flex;flex-direction:column;gap:2px;text-align:left;align-items:flex-start;z-index:2}
 .stop-l.left{text-align:right;align-items:flex-end}
@@ -498,7 +511,7 @@ button.chip{cursor:pointer}
     <div class="modes" id="modes"></div>
 
     <section class="roadwrap" aria-label="Quest map">
-      <div class="road-h"><h2>Quest map</h2><p>Otto floats down the current from quest to quest, and every quest has its own waters. Three chapters, twelve quests and one final boss, in the order of the NHA test plan. Each ring is how much of that topic you have mastered. Every quest has an enemy to battle. Reach 80% to summon its boss, and beat the boss to clear the quest.</p></div>
+      <div class="road-h"><h2>Quest map</h2><p>Otto floats down the current from quest to quest, and every quest has its own waters. Three chapters, twelve quests and one final boss, in the order of the NHA test plan. Each ring is how much of that topic you have mastered. Every quest has an enemy to battle. Reach 80% to summon its boss, and beat the boss to clear the quest. Every cleared quest and every cleared chapter unlocks a review test.</p></div>
       <div id="map"></div>
     </section>
 
@@ -518,6 +531,11 @@ button.chip{cursor:pointer}
       <div class="nextup" id="nextUp"></div>
       <ul class="ladder" id="ladder"></ul>
       <div class="swatches" id="swatches"></div>
+    </section>
+
+    <section class="panel tests" aria-label="Review tests">
+      <div><h2>Review tests</h2><p class="sub">Clear a quest to unlock its module test. Clear a whole chapter to unlock the chapter test. Real test style: no hearts, no hints, 80% to pass.</p></div>
+      <ul id="tests"></ul>
     </section>
 
     <section class="panel pex" aria-label="Official practice exams">
@@ -1212,6 +1230,17 @@ function claimQuests(){var out=[];S.day.claimed=S.day.claimed||{};DQ.forEach(fun
 function touchDay(){var t=dayStr(),inc=false;if(S.day.d!==t)S.day={d:t,rounds:0};if(S.last!==t){S.streak=(S.last===dayStr(-1))?S.streak+1:1;S.last=t;inc=true;S.days=S.days.concat(t).slice(-40);}S.day.rounds++;return inc;}
 function order12(){var a=[];GROUPS.forEach(function(g){a=a.concat(g.ids);});return a;}
 function currentStop(){var a=order12();for(var i=0;i<a.length;i++)if(!S.boss[a[i]])return a[i];return null;}
+function tinfo(k){if(k.slice(0,2)==="ch"&&!TRACKS[k]){var gi=+k.slice(2),g=GROUPS[gi];return{k:k,ch:gi,ids:g.ids,name:"Chapter "+(gi+1)+" test",head:"Chapter "+(gi+1),long:g.ch,max:g.ids.length>2?20:15,xp:50};}
+  return{k:k,ch:null,ids:[k],name:"Module test",head:"Module "+(order12().indexOf(k)+1),long:TRACKS[k].n,max:10,xp:25};}
+function tOpen(k){return tinfo(k).ids.every(function(id){return !!S.boss[id];});}
+function tN(k){var t=tinfo(k),av=0;t.ids.forEach(function(id){av+=byTrack[id].filter(function(x){return x.t==="mc";}).length;});return Math.min(t.max,av);}
+function testDue(){S.ct=S.ct||{};for(var i=0;i<GROUPS.length;i++){var ids=GROUPS[i].ids;for(var j=0;j<ids.length;j++)if(S.boss[ids[j]]&&!S.ct[ids[j]])return ids[j];if(tOpen("ch"+i)&&!S.ct["ch"+i])return "ch"+i;}return null;}
+function tState(k){var c=(S.ct||{})[k],o=tOpen(k);return{cls:!o?"":c?(c.pass?" ok":""):" due",txt:!o?"Locked":c?(c.pass?"Passed \u00B7 "+c.best+"%":"Retake \u00B7 "+c.best+"%"):"Ready",open:o};}
+function renderTests(){var h="";GROUPS.forEach(function(g,gi){var k="ch"+gi,st=tState(k);
+    h+='<li class="hd">Chapter '+(gi+1)+" \u00B7 "+esc(g.ch)+"</li>";
+    g.ids.forEach(function(id){var s2=tState(id);h+='<li><button class="trow'+s2.cls+'" data-test="'+id+'"'+(s2.open?"":" disabled")+">"+esc(TRACKS[id].n)+"<span>"+s2.txt+"</span></button></li>";});
+    h+='<li><button class="trow ch'+st.cls+'" data-test="'+k+'"'+(st.open?"":" disabled")+">Chapter "+(gi+1)+" test<span>"+st.txt+"</span></button></li>";});
+  $("tests").innerHTML=h;}
 function bossReady(id){return !S.boss[id]&&mastery(id)>=.8;}
 function need(L){return 100+60*(L-1);}
 function lvl(xp){var L=1,rem=xp;while(rem>=need(L)){rem-=need(L);L++;}return{L:L,rem:rem,need:need(L)};}
@@ -1309,9 +1338,10 @@ function renderHome(){
   $("heroRank").textContent="Level "+L.L+" · "+rank(L.L);
   $("heroMascot").innerHTML=beat("happy");
   var cur=currentStop(),ord=order12(),ci=ord.indexOf(cur),cg=GROUPS.filter(function(g){return g.ids.indexOf(cur)>=0;})[0];
-  $("heroTitle").textContent=cur?(bossReady(cur)?"Boss fight: Mega "+ENEMY[cur][0]:"Quest "+(ci+1)+": "+TRACKS[cur].n):"All twelve quests cleared";
-  $("heroSub").textContent=(st>0&&S.last!==dayStr())?"Play one round today to keep your "+st+"-day streak alive.":cur?"Chapter "+(GROUPS.indexOf(cg)+1)+" of 3 \u00B7 "+ZONE[cur][0]+" \u00B7 vs "+ENEMY[cur][0]:"Face the final boss, or keep every quest topped up.";
-  $("startTxt").textContent=cur?(bossReady(cur)?"Fight the boss":"Continue quest"):"Side quest";
+  var td=testDue(),ti=td?tinfo(td):null;renderTests();
+  $("heroTitle").textContent=ti?ti.name+": "+ti.long:cur?(bossReady(cur)?"Boss fight: Mega "+ENEMY[cur][0]:"Quest "+(ci+1)+": "+TRACKS[cur].n):"All twelve quests cleared";
+  $("heroSub").textContent=(st>0&&S.last!==dayStr())?"Play one round today to keep your "+st+"-day streak alive.":ti?(ti.ch!=null?"You cleared every quest in this chapter.":"Quest cleared.")+" Take the test to prove it sticks.":cur?"Chapter "+(GROUPS.indexOf(cg)+1)+" of 3 \u00B7 "+ZONE[cur][0]+" \u00B7 vs "+ENEMY[cur][0]:"Face the final boss, or keep every quest topped up.";
+  $("startTxt").textContent=ti?"Take the test":cur?(bossReady(cur)?"Fight the boss":"Continue quest"):"Side quest";
   ["3","5","8"].forEach(function(n){$("len"+n).setAttribute("aria-pressed",String(S.len===+n));});
   /* modes */
   var m=misses().length,du=dueQs().length;
@@ -1457,6 +1487,7 @@ function reveal(test,b,ok){[].forEach.call(document.querySelectorAll("#play .opt
 function onPlayClick(ev){
   var b=ev.target.closest("button");if(!b)return;
   if(b.dataset.exam)return examStart(+b.dataset.exam);
+  if(b.dataset.testgo)return examStart(tN(b.dataset.testgo),b.dataset.testgo);
   if(E)return examClick(b);
   if(b.id==="quitBtn")return quit();
   if(!R)return;
@@ -1522,13 +1553,13 @@ function finish(){
   h+='<p class="hint">'+(left>0?left+(left===1?" more round":" more rounds")+" to hit today's goal.":"Daily goal done.")+(bonus?" Includes a "+bonus+" XP finish bonus.":"")+"</p>";
   if(R.log.length){h+='<details class="review"'+(blitz||boss?" open":"")+"><summary>Review "+R.log.length+(R.log.length===1?" miss":" misses")+"</summary><ul>";
     R.log.forEach(function(q){var a=answerText(q);h+="<li>"+esc(q.q)+(a?" <b>"+esc(a)+".</b>":"")+(q.e?"<em>"+esc(q.e)+"</em>":"")+"</li>";});h+="</ul></details>";}
-  h+='<div class="res-btns"><button class="btn big" id="againBtn">'+(B?(win?"Next battle":"Try again"):blitz?"Blitz again":boss?"Another boss shift":"One more round")+'</button><button class="btn ghost" id="homeBtn">Back to the map</button></div>';
+  h+='<div class="res-btns"><button class="btn big" id="againBtn">'+(R.road&&testDue()?"Take the "+tinfo(testDue()).name.toLowerCase():B?(win?"Next battle":"Try again"):blitz?"Blitz again":boss?"Another boss shift":"One more round")+'</button><button class="btn ghost" id="homeBtn">Back to the map</button></div>';
   $("result").innerHTML=h;show("result");
   var pct=Math.round(L.rem/L.need*100),fill=function(){$("resFill").style.width=pct+"%";};
   if(reduce)fill();else setTimeout(fill,250);
   sfx("win");if((!B&&perfect)||up||cleared||(B&&win&&!B.lost))confetti();
   $("againBtn").focus({preventScroll:true});
-  if(inc)setTimeout(streakFx,reduce?0:1300);
+  if(inc)setTimeout(function(){if(!$("result").hidden)streakFx();},reduce?0:1300);
 }
 /* ---------- particles ---------- */
 var PS=[],raf=0;
@@ -1722,6 +1753,8 @@ function renderRoad(){
       h+='<button class="stop'+(done?" done":"")+(isCur||ready?" cur":"")+'" data-track="'+id+'" style="left:'+(x-44)+"px;top:"+(py-44)+"px;--gc:var("+(ready?"--bad-s":g.c)+");--p:"+pc+'%" aria-label="Quest '+(n+1)+": "+esc(t.n)+", "+pc+'% complete"><span class="stop-in">'+pc+"%</span></button>";
       h+='<button class="stop-l'+(left?" left":"")+'" data-track="'+id+'" tabindex="-1" aria-hidden="true" '+lab(x,py,left)+">"+(ready?'<span class="tag" style="background:var(--bad-s);color:#FFFFFF">Boss fight ready</span>':isCur?'<span class="tag">You are here</span>':"<small>Quest "+(n+1)+(done?" · cleared":"")+"</small>")+"<b>"+esc(t.n)+"</b><small>"+ZONE[id][0]+'</small><span class="stars">'+sv+"</span></button>";
       y+=H;n++;});
+    var ck="ch"+gi,cs=tState(ck);y+=SG/2;
+    h+='<button class="sign ctest'+cs.cls+'" data-test="'+ck+'"'+(cs.open?"":" disabled")+' style="top:'+y+'px">'+ICON.mock+"<span>Chapter "+(gi+1)+" review test<small>"+(!cs.open?"Clear this chapter's quests to unlock":cs.txt==="Ready"?"Ready \u00B7 "+tN(ck)+" questions, test style":cs.txt)+"</small></span></button>";y+=SG/2;
   });
   var o=offs[n%6],fx=Math.round(cx+o*k),fy=y+H/2,mk=S.mock,best=0;mk.forEach(function(m){best=Math.max(best,m.pct);});pts.push([fx,fy]);tg.push([fx+(o>0?66:-66),fy]);
   h+='<button class="stop exam" data-mode="mock" style="left:'+(fx-44)+"px;top:"+(fy-44)+'px" aria-label="Final boss: mock exam">'+ICON.mock+"</button>";
@@ -1741,7 +1774,7 @@ function renderRoad(){
 
 /* ---------- mock exam ---------- */
 var E=null,etimer=null,qarm=0;
-function quota(n){var out={},fr=[],sum=0;order12().forEach(function(id){var raw=TRACKS[id].w/150*n,f=Math.floor(raw);out[id]=f;sum+=f;fr.push([raw-f,id]);});fr.sort(function(a,b){return b[0]-a[0];});for(var i=0;sum<n;i++,sum++)out[fr[i%fr.length][1]]++;return out;}
+function quota(n,ids){var out={},fr=[],sum=0,W=0;ids=ids||order12();ids.forEach(function(id){W+=TRACKS[id].w;});ids.forEach(function(id){var raw=TRACKS[id].w/W*n,f=Math.floor(raw);out[id]=f;sum+=f;fr.push([raw-f,id]);});fr.sort(function(a,b){return b[0]-a[0];});for(var i=0;sum<n;i++,sum++)out[fr[i%fr.length][1]]++;return out;}
 function examSetup(){
   clearInterval(timer);clearInterval(etimer);R=null;E=null;show("play");
   var h='<div class="pbar"><button class="quit" id="quitBtn" aria-label="Back to the map">✕</button><b class="clock">Final boss · Mock exam</b></div>';
@@ -1750,10 +1783,18 @@ function examSetup(){
   if(S.mock.length){h+='<div class="panel"><h2>Your last attempts</h2><div class="drows">';S.mock.slice(-4).reverse().forEach(function(m){h+='<div class="drow"><span>'+m.n+" questions</span><b>"+m.pct+'%</b><span class="bar"><i class="'+(m.pct>=80?"hi":m.pct>=60?"mid":"lo")+'" style="width:'+m.pct+'%"></i></span></div>';});h+="</div></div>";}
   $("play").innerHTML=h;
 }
-function examStart(n){
-  var q=quota(n),items=[];order12().forEach(function(id){items=items.concat(shuffle(byTrack[id].filter(function(x){return x.t==="mc";})).slice(0,q[id]));});
+function testSetup(k){
+  clearInterval(timer);clearInterval(etimer);R=null;E=null;show("play");
+  var t=tinfo(k),n=tN(k),ct=(S.ct||{})[k];
+  var h='<div class="pbar"><button class="quit" id="quitBtn" aria-label="Back to the map">\u2715</button><b class="clock">'+t.head+" \u00B7 Review test</b></div>";
+  h+='<div class="qcard"><div><div class="qtext">'+esc(t.long)+': show what stuck.</div><p class="hint">'+(t.ch!=null?"A real test on everything in this chapter: "+t.ids.map(function(id){return esc(TRACKS[id].n);}).join(", ")+".":"A real test on this module.")+" No hearts, no enemies and no hints until you hand it in. Score 80% or higher to pass."+(ct?" Your best so far is "+ct.best+"%.":"")+'</p></div><div class="mascot sm">'+beat("think")+"</div></div>";
+  h+='<div class="opts"><button class="opt c2 choice" data-testgo="'+k+'"><span><b>Start the test</b>'+n+" questions \u00B7 "+n+" minutes</span></button></div>";
+  $("play").innerHTML=h;
+}
+function examStart(n,k){
+  var ids=k?tinfo(k).ids:order12(),q=quota(n,ids),items=[];ids.forEach(function(id){items=items.concat(shuffle(byTrack[id].filter(function(x){return x.t==="mc";})).slice(0,q[id]));});
   items=shuffle(items);
-  E={items:items,opts:items.map(function(x){return shuffle(x.a);}),ans:[],flag:{},i:0,T:n*60,t:n*60,startL:lvl(S.xp).L,startXp:S.xp,startRd:readiness()};
+  E={items:items,opts:items.map(function(x){return shuffle(x.a);}),ans:[],flag:{},i:0,k:k||null,T:items.length*60,t:items.length*60,startL:lvl(S.xp).L,startXp:S.xp,startRd:readiness()};
   clearInterval(etimer);etimer=setInterval(function(){if(!E)return clearInterval(etimer);E.t--;var c=$("exClock"),b=$("exBar");if(c)c.textContent=clock(E.t);if(b)b.style.width=Math.max(0,E.t/E.T*100)+"%";if(E.t<=0)examSubmit();},1000);
   examRender();
 }
@@ -1784,13 +1825,16 @@ function examSubmit(){
   X.items.forEach(function(q,i){var ch=X.ans[i]!=null?X.opts[i][X.ans[i]]:null,ok=ch===q.a[0],st=S.q[q.id]||(S.q[q.id]={c:0}),t=tr[q.d]||(tr[q.d]={n:0,ok:0});
     t.n++;if(ok){okc++;t.ok++;if(st.w)S.day.fixed=(S.day.fixed||0)+1;st.c=Math.min(2,(st.c||0)+1);st.w=0;}else{st.c=0;st.w=1;wrong.push([q,ch]);}sched(st,ok);});
   var pct=Math.round(okc/n*100),gain=okc*8+30;S.xp+=gain;
-  S.mock=S.mock.concat({d:dayStr(),n:n,pct:pct}).slice(-12);
+  var TK=X.k,TI=TK?tinfo(TK):null,cpass=false,cfirst=false;
+  if(!TK)S.mock=S.mock.concat({d:dayStr(),n:n,pct:pct}).slice(-12);
+  else{S.ct=S.ct||{};var pr=S.ct[TK];cpass=pct>=80;cfirst=cpass&&!(pr&&pr.pass);if(cfirst){gain+=TI.xp;S.xp+=TI.xp;}S.ct[TK]={best:Math.max(pr?pr.best:0,pct),n:(pr?pr.n:0)+1,pass:(pr&&pr.pass)||cpass?1:0};}
   var inc=touchDay(),dq=claimQuests();gain+=dq.length*DQ_XP;save();
   var L=lvl(S.xp),up=L.L>X.startL,old=lvl(X.startXp),rd=readiness(),used=X.T-Math.max(0,X.t);
   var rows=Object.keys(tr).map(function(id){return{id:id,n:tr[id].n,ok:tr[id].ok,p:Math.round(tr[id].ok/tr[id].n*100)};}).sort(function(a,b){return a.p-b.p;});
   var weak=rows[0]&&rows[0].p<100?rows[0]:null;
-  var h='<div class="mascot lg" id="rm">'+beat(pct>=80?"wow":pct>=60?"happy":"think")+"</div><h1>"+(pct>=80?"Boss beaten: ":"Mock exam: ")+pct+'%</h1><div class="gain">+'+gain+" XP</div>";
-  h+='<p class="hint">'+(pct>=80?"That is a strong score. Hold 80% or higher across a few mock exams before test day.":"Aim for 80% or higher. Your weakest topics are listed first below.")+" The real exam reports a scaled score, so treat this as a practice gauge.</p>";
+  var h='<div class="mascot lg" id="rm">'+beat(pct>=80?"wow":pct>=60?"happy":"think")+"</div><h1>"+(TI?TI.name+(cpass?" passed: ":": "):pct>=80?"Boss beaten: ":"Mock exam: ")+pct+'%</h1><div class="gain">+'+gain+" XP</div>";
+  if(TI)h+='<p class="hint">'+(cpass?"You held on to "+esc(TI.long)+"."+(cfirst?" That is "+TI.xp+" bonus XP for passing.":"")+" The current carries you on.":"80% passes. Battle your weak spots below, then retake the test from the home screen whenever you are ready.")+"</p>";
+  else h+='<p class="hint">'+(pct>=80?"That is a strong score. Hold 80% or higher across a few mock exams before test day.":"Aim for 80% or higher. Your weakest topics are listed first below.")+" The real exam reports a scaled score, so treat this as a practice gauge.</p>";
   h+=questHtml(dq);
   if(up)REWARDS.forEach(function(r){if(r.L>X.startL&&r.L<=L.L)h+='<div class="unlock"><span>Level '+r.L+" unlocked: "+esc(r.n)+"</span>"+unlockNote(r)+"</div>";});
   h+='<div class="stats"><div class="stat"><b>'+okc+"/"+n+'</b><span>correct</span></div><div class="stat"><b>'+clock(used)+'</b><span>time used</span></div><div class="stat"><b>'+rd+'%</b><span>exam ready'+(rd>X.startRd?", up "+(rd-X.startRd):"")+"</span></div></div>";
@@ -1799,10 +1843,10 @@ function examSubmit(){
   h+="</div></div>";
   if(wrong.length){h+='<details class="review"><summary>Review '+wrong.length+(wrong.length===1?" miss":" misses")+"</summary><ul>";
     wrong.forEach(function(w){h+="<li>"+esc(w[0].q)+" <b>Answer: "+esc(w[0].a[0])+".</b><em>"+(w[1]?"You chose: "+esc(w[1])+". "+(whyNot(w[0],w[1])?esc(whyNot(w[0],w[1]))+" ":""):"Not answered. ")+esc(w[0].e)+"</em></li>";});h+="</ul></details>";}
-  h+='<div class="res-btns">'+(function(){var ws=rows.filter(function(r){return r.p<80;}).slice(0,3),o="";if(!ws.length&&weak)ws=[weak];if(ws.length)o+='<p class="hint" style="margin:0">Your weak spots. Battle them while they are fresh.</p>';ws.forEach(function(r,i){o+='<button class="btn'+(i?" ghost":" big")+'" data-prac="'+r.id+'">'+esc(TRACKS[r.id].n)+" · "+r.p+"%</button>";});return o;})()+'<button class="btn'+(weak?" ghost":" big")+'" id="againBtn" data-m="mock">Take another mock exam</button><button class="btn ghost" id="homeBtn">Back to the map</button></div>';
+  h+='<div class="res-btns">'+(function(){var ws=rows.filter(function(r){return r.p<80;}).slice(0,3),o="";if(!ws.length&&weak)ws=[weak];if(ws.length)o+='<p class="hint" style="margin:0">Your weak spots. Battle them while they are fresh.</p>';ws.forEach(function(r,i){o+='<button class="btn'+(i?" ghost":" big")+'" data-prac="'+r.id+'">'+esc(TRACKS[r.id].n)+" · "+r.p+"%</button>";});return o;})()+'<button class="btn'+(weak?" ghost":" big")+'" id="againBtn" data-m="'+(TK?"test":"mock")+'" data-k="'+(TK||"")+'">'+(TK?(cpass?"Take the test again":"Retake the test"):"Take another mock exam")+"</button>"+'<button class="btn ghost" id="homeBtn">Back to the map</button></div>';
   $("result").innerHTML=h;show("result");
   sfx("win");if(pct>=80||up)confetti();
-  if(inc)setTimeout(streakFx,reduce?0:1300);
+  if(inc)setTimeout(function(){if(!$("result").hidden)streakFx();},reduce?0:1300);
 }
 
 /* ---------- events ---------- */
@@ -1811,12 +1855,13 @@ $("result").addEventListener("click",function(ev){var b=ev.target.closest("butto
   if(b.dataset.wear){S.scrub=b.dataset.wear;save();applyScrub();$("rm").innerHTML=beat("wow");b.textContent="Looking good";b.disabled=true;return;}
   if(b.dataset.prac)return start("track",b.dataset.prac);
   if(b.dataset.boss)return start("track",b.dataset.boss,true);
-  if(b.id==="againBtn"){if(b.dataset.m==="mock")return examSetup();var m=R.mode,t=R.track,rd=R.road;if(rd){t=currentStop();m=t?"track":"mix";}if(m==="miss"&&!misses().length)m="mix";if(m==="due"&&!dueQs().length)m="mix";start(m,t,rd);}
+  if(b.id==="againBtn"){if(b.dataset.m==="mock")return examSetup();if(b.dataset.m==="test")return testSetup(b.dataset.k);var m=R.mode,t=R.track,rd=R.road;if(rd&&testDue())return testSetup(testDue());if(rd){t=currentStop();m=t?"track":"mix";}if(m==="miss"&&!misses().length)m="mix";if(m==="due"&&!dueQs().length)m="mix";start(m,t,rd);}
   if(b.id==="homeBtn"){R=null;renderHome();show("home");}});
-$("startBtn").addEventListener("click",function(){var c=currentStop();if(c)start("track",c,true);else start("mix");});
+$("tests").addEventListener("click",function(ev){var b=ev.target.closest("[data-test]");if(b&&!b.disabled)testSetup(b.dataset.test);});
+$("startBtn").addEventListener("click",function(){var d=testDue();if(d)return testSetup(d);var c=currentStop();if(c)start("track",c,true);else start("mix");});
 $("modes").addEventListener("click",function(ev){var b=ev.target.closest("[data-mode]");if(!b||b.disabled)return;if(b.dataset.mode==="mock")examSetup();else start(b.dataset.mode);});
 $("swatches").addEventListener("click",function(ev){var b=ev.target.closest("[data-scrub]");if(!b||b.disabled)return;S.scrub=b.dataset.scrub;save();sfx("tap");renderHome();});
-$("map").addEventListener("click",function(ev){var b=ev.target.closest("[data-track],[data-mode]");if(!b)return;if(b.dataset.mode)examSetup();else start("track",b.dataset.track);});
+$("map").addEventListener("click",function(ev){var b=ev.target.closest("[data-track],[data-mode],[data-test]");if(!b)return;if(b.dataset.test)testSetup(b.dataset.test);else if(b.dataset.mode)examSetup();else start("track",b.dataset.track);});
 $("soundBtn").addEventListener("click",function(){S.sound=!S.sound;save();renderHome();sfx("tap");});
 document.querySelector(".seg").addEventListener("click",function(ev){var b=ev.target.closest("[data-len]");if(!b)return;S.len=+b.dataset.len;save();renderHome();});
 var armed=0;
