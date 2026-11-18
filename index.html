@@ -350,6 +350,9 @@ h1,h2,h3,p{margin:0}
 .pex li{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:2px solid var(--line);border-radius:14px;background:var(--surface2)}
 .pex a{font-family:var(--display);font-weight:800;color:var(--ink);text-decoration:underline;overflow-wrap:anywhere}
 .pex small{color:var(--muted);font-size:.86rem}
+.savewarn{background:var(--surface);border:2px solid var(--bad-s);border-radius:var(--r);padding:12px 14px;max-width:65ch;font-size:.95rem}
+.savewarn .link{color:var(--ink);font-size:.95rem;font-weight:700}
+#bkCode{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.8rem;word-break:break-all}
 .fbcard{display:flex;flex-direction:column;gap:12px}
 .fbcard .btn{align-self:flex-start}
 .fbdlg{place-items:start center}
@@ -538,10 +541,12 @@ button.chip{cursor:pointer}
   <main id="play" class="play" hidden></main>
   <main id="result" class="res" hidden></main>
 
+  <p class="savewarn" id="saveWarn" hidden><b>Heads up: this browser is not keeping your progress.</b> <span id="saveWarnT"></span> <button class="link" id="bkBtn2">Back up my progress</button></p>
   <footer class="foot" id="foot">
     <p>Tracks follow the NHA CCMA test plan (2022 job analysis): 150 scored questions plus 30 unscored pretest questions in 3 hours. The number on each track is how many of the 150 scored questions come from it. The question bank also covers topics from the CMA (AAMA), RMA (AMT) and NCMA (NCCT) exam outlines, such as drug classes, nutrition, first aid, heart rhythms and office finance.</p>
     <p>Independent study tool, not affiliated with or endorsed by NHA, AAMA, AMT or NCCT. Starter question set; check anything surprising against your course materials. Progress is saved in this browser.<span id="syncNote"></span></p>
     <button class="link" id="howBtn">How to play</button>
+    <button class="link" id="bkBtn">Back up or restore my progress</button>
     <button class="link" id="resetBtn">Reset my progress</button>
   </footer>
 </div>
@@ -560,6 +565,16 @@ button.chip{cursor:pointer}
     <button class="btn" id="fbSend">Send feedback</button>
     <button type="button" class="btn ghost" id="fbCopy" hidden>Copy my feedback</button>
   </form>
+</div>
+<div id="bkDlg" class="streakfx fbdlg" role="dialog" aria-modal="true" aria-labelledby="bkTitle" hidden>
+  <div class="fbform">
+    <div class="fbhead"><h2 id="bkTitle">Back up your progress</h2><button type="button" class="quit" id="bkClose" aria-label="Close backup">&#10005;</button></div>
+    <p class="fbmsg">Your save code holds your level, quests and review schedule. Keep it in your notes or text it to yourself. If your progress ever disappears, or you switch devices, paste it below to get everything back.</p>
+    <button type="button" class="btn" id="bkCopy">Copy my save code</button>
+    <label>Restore from a save code<textarea id="bkCode" rows="3" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste your code here"></textarea></label>
+    <button type="button" class="btn ghost" id="bkLoad">Restore my progress</button>
+    <p class="fbmsg" id="bkMsg" aria-live="polite"></p>
+  </div>
 </div>
 <div id="intro" class="streakfx" role="dialog" aria-modal="true" aria-label="How to play" hidden></div>
 <div id="streak" class="streakfx" role="dialog" aria-label="Day streak" hidden></div>
@@ -1183,8 +1198,11 @@ var SCRUBS=[["teal","#0B8A83",1],["coral","#DE4F39",3],["navy","#2F4FA8",4],["vi
 /* ---------- state ---------- */
 var KEY="ccmaQuest.v1";
 var S={xp:0,streak:0,last:"",day:{d:"",rounds:0},q:{},sound:true,len:5,best:0,scrub:"teal",bossBest:0,days:[],mock:[],boss:{},calm:false};
-try{var raw=localStorage.getItem(KEY);if(raw){var o=JSON.parse(raw);for(var k in o)S[k]=o[k];}}catch(e){}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}if(typeof cloudQueue==="function")cloudQueue();}
+var storeOK=true;
+try{var raw=localStorage.getItem(KEY);if(raw){var o=JSON.parse(raw);for(var k in o)S[k]=o[k];}}catch(e){storeOK=false;}
+try{localStorage.setItem(KEY+".t","1");if(localStorage.getItem(KEY+".t")!=="1")storeOK=false;localStorage.removeItem(KEY+".t");}catch(e){storeOK=false;}
+function save(){try{var j=JSON.stringify(S);localStorage.setItem(KEY,j);if(localStorage.getItem(KEY)!==j)storeOK=false;}catch(e){storeOK=false;}if(typeof cloudQueue==="function")cloudQueue();if(typeof saveWarn==="function")saveWarn();}
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(function(){});}catch(e){}
 function dayStr(off){var d=new Date();d.setDate(d.getDate()+(off||0));return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();}
 if(S.day.d!==dayStr())S.day={d:dayStr(),rounds:0};
 S.days=S.days||[];S.mock=S.mock||[];S.boss=S.boss||{};if(S.last&&S.days.indexOf(S.last)<0)S.days.push(S.last);
@@ -1281,7 +1299,7 @@ function setMood(mood,anim){var m=$("pm");if(!m)return;m.innerHTML=beat(mood);if
 function unlocked(id){var r=REWARDS.filter(function(x){return x.id===id;})[0];return !r||lvl(S.xp).L>=r.L;}
 
 /* ---------- home ---------- */
-function show(v){["home","play","result"].forEach(function(n){$(n).hidden=n!==v;});$("foot").hidden=v!=="home";window.scrollTo(0,0);}
+function show(v){["home","play","result"].forEach(function(n){$(n).hidden=n!==v;});$("foot").hidden=v!=="home";if(v!=="home")$("saveWarn").hidden=true;else if(saveWarn)saveWarn();window.scrollTo(0,0);}
 function renderHome(){
   applyScrub();
   var L=lvl(S.xp),st=liveStreak();
@@ -1337,7 +1355,7 @@ function flagList(){var f=S.flags||{},out=[];Q.forEach(function(q){if(f[q.id])ou
 /* ---------- cloud backup for signed-in players ---------- */
 var CLOUD=null,cloudT=null,cloudBusy=false,cloudDirty=false;
 function cloudPush(){if(!CLOUD)return;if(cloudBusy){cloudDirty=true;return;}cloudBusy=true;cloudDirty=false;
-  CLOUD.set({s:JSON.stringify(S),xp:S.xp,rev:S.rev||0,t:Date.now()}).then(function(){var n=$("syncNote");if(n)n.textContent=" It is also backed up to your Claude account, so it follows you to other devices.";},function(){CLOUD=null;})
+  CLOUD.set({s:JSON.stringify(S),xp:S.xp,rev:S.rev||0,t:Date.now()}).then(function(){var n=$("syncNote");if(n)n.textContent=" It is also backed up to your Claude account, so it follows you to other devices.";if(saveWarn)saveWarn();},function(){CLOUD=null;})
    .then(function(){cloudBusy=false;if(cloudDirty)cloudQueue();});}
 function cloudQueue(){if(!CLOUD)return;clearTimeout(cloudT);cloudT=setTimeout(cloudPush,4000);}
 function cloudReady(db,uid){var ref;try{ref=db.doc("data/users/"+uid+"/save");}catch(e){return;}
@@ -1837,6 +1855,42 @@ $("streakChip").addEventListener("click",streakFx);
   box.addEventListener("keydown",function(ev){if(ev.key==="Escape")close();ev.stopPropagation();});
   $("howBtn").addEventListener("click",open);
   if(!S.intro&&!S.xp&&!Object.keys(S.q||{}).length)open();
+})();
+
+/* ---------- save code: back up and restore ---------- */
+var saveWarn;
+(function(){
+  var dlg=$("bkDlg"),msg=$("bkMsg"),lastFocus=null;
+  function b64(u8){var t="";for(var i=0;i<u8.length;i+=8192)t+=String.fromCharCode.apply(null,u8.subarray(i,i+8192));return btoa(t).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");}
+  function unb64(t){t=t.replace(/-/g,"+").replace(/_/g,"/");while(t.length%4)t+="=";var b=atob(t),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u;}
+  function pipe(u8,T){return new Response(new Blob([u8]).stream().pipeThrough(new T("deflate-raw"))).arrayBuffer().then(function(a){return new Uint8Array(a);});}
+  function make(){var u=new TextEncoder().encode(JSON.stringify(S));
+    if(window.CompressionStream)return pipe(u,CompressionStream).then(function(z){return "CQ2."+b64(z);},function(){return "CQ1."+b64(u);});
+    return Promise.resolve("CQ1."+b64(u));}
+  function read(code){code=String(code||"").replace(/\s+/g,"");var m=/^CQ([12])\.([A-Za-z0-9_-]+)$/.exec(code);
+    if(!m)return Promise.reject(new Error("shape"));var u;try{u=unb64(m[2]);}catch(e){return Promise.reject(e);}
+    var txt=m[1]==="1"?Promise.resolve(u):(window.DecompressionStream?pipe(u,DecompressionStream):Promise.reject(new Error("old")));
+    return txt.then(function(x){var o=JSON.parse(new TextDecoder().decode(x));if(!o||typeof o!=="object"||!o.q||typeof o.q!=="object"||typeof o.xp!=="number")throw new Error("shape");return o;});}
+  function copy(t){function old(){var ta=document.createElement("textarea");ta.value=t;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();var ok=false;try{ok=document.execCommand("copy");}catch(e){}ta.remove();return ok;}
+    if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(t).then(function(){return true;},function(){return old();});
+    return Promise.resolve(old());}
+  function open(){lastFocus=document.activeElement;msg.textContent="";$("bkCode").value="";dlg.hidden=false;dlg.scrollTop=0;$("bkClose").focus();}
+  function close(){dlg.hidden=true;if(lastFocus&&lastFocus.focus)lastFocus.focus();}
+  $("bkBtn").addEventListener("click",open);$("bkBtn2").addEventListener("click",open);$("bkClose").addEventListener("click",close);
+  dlg.addEventListener("click",function(ev){if(ev.target===dlg)close();});
+  dlg.addEventListener("keydown",function(ev){if(ev.key==="Escape")close();ev.stopPropagation();});
+  $("bkCopy").addEventListener("click",function(){make().then(function(c){return copy(c).then(function(ok){
+    if(ok){msg.textContent="Copied. Paste it somewhere safe, like your notes or a text to yourself.";S.bk=dayStr();save();}
+    else{$("bkCode").value=c;$("bkCode").select();msg.textContent="Copying is blocked here, so your code is in the box. Select all of it and copy it by hand.";}});});});
+  $("bkLoad").addEventListener("click",function(){var v=$("bkCode").value;if(!v.trim()){msg.textContent="Paste your save code in the box first.";return;}
+    read(v).then(function(o){var keep={sound:S.sound,rev:Math.max(S.rev||0,o.rev||0)+1};
+      S={xp:0,streak:0,last:"",day:{d:"",rounds:0},q:{},sound:true,len:5,best:0,scrub:"teal",bossBest:0,days:[],mock:[],boss:{},calm:false};
+      for(var k in o)S[k]=o[k];S.rev=keep.rev;S.intro=1;if(!S.day||S.day.d!==dayStr())S.day={d:dayStr(),rounds:0};S.days=S.days||[];S.mock=S.mock||[];S.boss=S.boss||{};
+      save();$("intro").hidden=true;renderHome();msg.textContent="Progress restored. Welcome back!";$("bkCode").value="";},
+     function(e){msg.textContent=e&&e.message==="old"?"This browser cannot read that code. Try a newer browser.":"That code did not work. Make sure you pasted all of it.";});});
+  saveWarn=function(){var w=$("saveWarn");if(!w)return;var show=!storeOK&&!CLOUD;w.hidden=!show;
+    if(show)$("saveWarnT").textContent="This often happens in private tabs and inside apps like Instagram or Messages. Open the link in Safari or Chrome, or copy a save code before you close this page.";};
+  saveWarn();
 })();
 
 /* ---------- tester feedback ---------- */
