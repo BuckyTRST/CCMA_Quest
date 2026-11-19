@@ -1400,7 +1400,8 @@ function cloudReady(db,uid){var ref;try{ref=db.doc("data/users/"+uid+"/save");}c
 
 /* ---------- round engine ---------- */
 var R=null,timer=null;
-function weight(q){var st=S.q[q.id],w=TRACKS[q.d].w;if(st&&st.due!=null&&st.due<=dnum())w*=4;return w*(st?(st.w?3:(st.c>=2?.25:1)):1.6);}
+function known(st){return !!st&&!st.w&&(st.n||0)>=5;}
+function weight(q){var st=S.q[q.id],w=TRACKS[q.d].w;if(known(st))return w*1e-6;if(st&&st.due!=null&&st.due<=dnum())w*=4;if(st&&!st.w&&st.s&&(S.seq||0)-st.s<=1)w*=.3;return w*(st?(st.w?3:(st.c>=2?((st.n||0)>=3?.12:.25):1)):1.6);}
 function examWeight(q){return TRACKS[q.d].w/byTrack[q.d].length;}
 function pick(pool,n,cap,wf){var out=[],c=pool.slice(),nm=0,no=0;wf=wf||weight;
   while(out.length<n&&c.length){var tot=0,ws=c.map(function(q){var w=wf(q);tot+=w;return w;}),r=Math.random()*tot,i=0;
@@ -1410,7 +1411,7 @@ function pick(pool,n,cap,wf){var out=[],c=pool.slice(),nm=0,no=0;wf=wf||weight;
     if(cap&&q.t==="order"){if(no>=1)continue;no++;}
     out.push(q);}
   return shuffle(out);}
-function start(mode,track,road){
+function start(mode,track,road){S.seq=(S.seq||0)+1;
   var items,pool=null,simple=function(q){return q.t==="mc"||q.t==="tf";};
   if(mode==="blitz")items=shuffle(Q.filter(function(q){return q.t==="tf";}));
   else if(mode==="boss")items=pick(Q.filter(simple),15,false,examWeight);
@@ -1432,8 +1433,9 @@ function tick(){if(R&&R.battle)return btick();if(!R||(R.mode!=="blitz"&&R.mode!=
 function quit(){hush();clearInterval(timer);clearInterval(etimer);E=null;R=null;renderHome();show("home");}
 function record(q,ok){
   var st=S.q[q.id]||(S.q[q.id]={c:0}),boss=R.mode==="boss";
-  if(ok){if(st.w)S.day.fixed=(S.day.fixed||0)+1;st.c=Math.min(2,(st.c||0)+1);st.w=0;R.ok++;R.combo++;R.best=Math.max(R.best,R.combo);S.day.combo=Math.max(S.day.combo||0,R.combo);}
-  else{st.c=0;st.w=1;R.combo=0;R.log.push(q);}
+  if(ok){if(st.w)S.day.fixed=(S.day.fixed||0)+1;st.n=(st.n!=null?st.n:(st.c||0))+1;st.c=Math.min(2,(st.c||0)+1);st.w=0;R.ok++;R.combo++;R.best=Math.max(R.best,R.combo);S.day.combo=Math.max(S.day.combo||0,R.combo);}
+  else{st.c=0;st.n=0;st.w=1;R.combo=0;R.log.push(q);}
+  st.s=S.seq||0;
   sched(st,ok);
   var gain=ok?(boss?12:(R.mode==="blitz"?5:10)+Math.min(R.combo-1,5)*2):0;
   R.xp+=gain;S.xp+=gain;R.res[R.i]=ok;R.done++;save();
@@ -1823,7 +1825,7 @@ function examSubmit(){
   clearInterval(etimer);
   var X=E,n=X.items.length,okc=0,tr={},wrong=[];E=null;
   X.items.forEach(function(q,i){var ch=X.ans[i]!=null?X.opts[i][X.ans[i]]:null,ok=ch===q.a[0],st=S.q[q.id]||(S.q[q.id]={c:0}),t=tr[q.d]||(tr[q.d]={n:0,ok:0});
-    t.n++;if(ok){okc++;t.ok++;if(st.w)S.day.fixed=(S.day.fixed||0)+1;st.c=Math.min(2,(st.c||0)+1);st.w=0;}else{st.c=0;st.w=1;wrong.push([q,ch]);}sched(st,ok);});
+    t.n++;if(ok){okc++;t.ok++;if(st.w)S.day.fixed=(S.day.fixed||0)+1;st.n=(st.n!=null?st.n:(st.c||0))+1;st.c=Math.min(2,(st.c||0)+1);st.w=0;}else{st.c=0;st.n=0;st.w=1;wrong.push([q,ch]);}sched(st,ok);});
   var pct=Math.round(okc/n*100),gain=okc*8+30;S.xp+=gain;
   var TK=X.k,TI=TK?tinfo(TK):null,cpass=false,cfirst=false;
   if(!TK)S.mock=S.mock.concat({d:dayStr(),n:n,pct:pct}).slice(-12);
