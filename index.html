@@ -480,6 +480,11 @@ h1,h2,h3,p{margin:0}
 .opt.pick{border-color:var(--o2);background:color-mix(in srgb,var(--o2) 16%,var(--surface));box-shadow:0 5px 0 var(--o2)}
 .opt.pick kbd{background:var(--o2);color:var(--on-o)}
 .exnav{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.qgrid .sh{grid-column:1 / -1;font-weight:700;font-size:.82rem;color:var(--muted);margin-top:8px;text-align:left}
+.outl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:.92rem}
+.outl li{display:flex;justify-content:space-between;gap:10px}
+.outl li.sub{padding-left:18px;color:var(--muted)}
+.outl li b{font-variant-numeric:tabular-nums}
 .qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(42px,1fr));gap:6px}
 .qgrid button{height:42px;border-radius:10px;border:2px solid var(--line);background:var(--surface);font-weight:700;font-variant-numeric:tabular-nums}
 .qgrid button.a{background:var(--scrub);color:var(--on-scrub);border-color:transparent}
@@ -555,11 +560,6 @@ button.chip{cursor:pointer}
         <div class="mascot" id="heroMascot"></div>
       </div>
       <button class="playbtn" id="startBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5v17a1 1 0 0 0 1.5.9l14-8.5a1 1 0 0 0 0-1.8l-14-8.5A1 1 0 0 0 6 3.5z"/></svg><span id="startTxt">Continue quest</span></button>
-      <div class="set"><span id="lenLabel">Battle length</span>
-        <span class="seg" role="group" aria-labelledby="lenLabel">
-          <button id="len3" data-len="3">3</button><button id="len5" data-len="5">5</button><button id="len8" data-len="8">8</button>
-        </span>
-      </div>
       <div class="set"><span id="calmLabel">Enemy attack timer</span>
         <span class="seg" id="calmSeg" role="group" aria-labelledby="calmLabel">
           <button id="calmOn" data-calm="0">On</button><button id="calmOff" data-calm="1">Off</button>
@@ -1045,6 +1045,7 @@ mc("law","A subpoena duces tecum orders a person to:",["Bring specified records 
 mc("law","A minor who is legally emancipated can:",["Consent to their own medical care","Not receive care without a parent","Only consent to emergencies","Only consent in writing with a witness"],"Emancipation may come through marriage, military service or a court order, depending on state law.");
 tf("law","A breach of unsecured protected health information must be reported to the affected patients.",true,"HIPAA requires notice without unreasonable delay and no later than 60 days after the breach is discovered.");
 tf("law","OSHA requires employee exposure records to be kept for the length of employment plus 30 years.",true,"This applies to records of exposure to bloodborne pathogens and other hazards.");
+mc("ic","Which of these must be sterilized, not just disinfected, before it is used on a patient?",["Surgical scissors used in a minor procedure","A stethoscope","A blood pressure cuff","An exam table"],"Items that enter sterile tissue must be sterilized. Items that only touch intact skin, such as a stethoscope, a cuff or an exam table, are cleaned and disinfected.");
 
 /* ---------- why each wrong option is wrong (same order as the wrong options in each question) ---------- */
 var WHY={
@@ -1318,6 +1319,7 @@ function save(){try{var j=JSON.stringify(S);localStorage.setItem(KEY,j);if(local
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(function(){});}catch(e){}
 function dayStr(off){var d=new Date();d.setDate(d.getDate()+(off||0));return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();}
 if(S.day.d!==dayStr())S.day={d:dayStr(),rounds:0};
+S.len=10;
 S.days=S.days||[];S.mock=S.mock||[];S.boss=S.boss||{};if(S.last&&S.days.indexOf(S.last)<0)S.days.push(S.last);
 var GOAL=3,DQ_XP=25;
 var DQ=[{id:"r",n:"Finish 3 rounds",g:3,v:function(d){return d.rounds||0;}},{id:"c",n:"Get 5 right in a row",g:5,v:function(d){return d.combo||0;}},{id:"f",n:"Win back 3 missed questions",g:3,v:function(d){return d.fixed||0;}}];
@@ -1437,7 +1439,6 @@ function renderHome(){
   $("heroTitle").textContent=ti?ti.name+": "+ti.long:cur?(bossReady(cur)?"Boss fight: Mega "+ENEMY[cur][0]:"Quest "+(ci+1)+": "+TRACKS[cur].n):"All twelve quests cleared";
   $("heroSub").textContent=(st>0&&S.last!==dayStr())?"Play one round today to keep your "+st+"-day streak alive.":ti?(ti.ch!=null?"You cleared every quest in this chapter.":"Quest cleared.")+" Take the test to prove it sticks.":cur?"Chapter "+(GROUPS.indexOf(cg)+1)+" of 3 \u00B7 "+ZONE[cur][0]+" \u00B7 vs "+ENEMY[cur][0]:"Face the final boss, or keep every quest topped up.";
   $("startTxt").textContent=ti?"Take the test":cur?(bossReady(cur)?"Fight the boss":"Continue quest"):"Side quest";
-  ["3","5","8"].forEach(function(n){$("len"+n).setAttribute("aria-pressed",String(S.len===+n));});
   /* modes */
   var m=misses().length,du=dueQs().length;
   var mk=S.mock,modes=[
@@ -1592,7 +1593,7 @@ function start(mode,track,road){F=null;S.seq=(S.seq||0)+1;
   R.t=R.T;R.road=!!road;if(mode==="pt")R.ptAll=track?PT.filter(function(q){return q.src===track;}):PT;if(mode==="mt")R.ptAll=track?MT.filter(function(m){return m.src===track;}):MT;R.startM=mode==="track"&&track?mastery(track):0;E=null;clearInterval(etimer);show("play");clearInterval(timer);
   if(pool){var L=lvl(S.xp).L,stt=stats(L),bs=mode==="track"&&bossReady(track),eid=mode==="track"?track:mode==="pt"?"pt":mode==="mt"?"mt":"mix",ch={};
     ABIL.forEach(function(a){if(L>=a.L)ch[a.id]=stt.ch;});
-    R.pool=pool;R.battle={id:eid,name:(bs?"Mega ":"")+ENEMY[eid][0],boss:bs,emax:bs?120:S.len*10,php:stt.hp,pmax:stt.hp,dmg:stt.dmg,g:0,gmax:bs?25:40,ch:ch,lost:0};R.battle.ehp=R.battle.emax;}
+    R.pool=pool;R.battle={id:eid,name:(bs?"Mega ":"")+ENEMY[eid][0],boss:bs,emax:bs?120:10*stt.dmg,php:stt.hp,pmax:stt.hp,dmg:stt.dmg,g:0,gmax:bs?25:40,ch:ch,lost:0};R.battle.ehp=R.battle.emax;}
   if(mode==="blitz"||mode==="boss"||R.battle)timer=setInterval(tick,100);
   renderQ();
 }
@@ -1950,11 +1951,15 @@ function renderRoad(){
 /* ---------- mock exam ---------- */
 var E=null,etimer=null,qarm=0;
 function quota(n,ids){var out={},fr=[],sum=0,W=0;ids=ids||order12();ids.forEach(function(id){W+=TRACKS[id].w;});ids.forEach(function(id){var raw=TRACKS[id].w/W*n,f=Math.floor(raw);out[id]=f;sum+=f;fr.push([raw-f,id]);});fr.sort(function(a,b){return b[0]-a[0];});for(var i=0;sum<n;i++,sum++)out[fr[i%fr.length][1]]++;return out;}
+var SEC={fk:["1","Foundational Knowledge and Basic Science"],ap:["2","Anatomy and Physiology"],iv:["3A","Patient Intake and Vitals"],gc:["3B","General Patient Care"],ic:["3C","Infection Control and Safety"],lab:["3D","Point of Care Testing and Laboratory Procedures"],ph:["3E","Phlebotomy"],ekg:["3F","EKG and Cardiovascular Testing"],cc:["4","Patient Care Coordination and Education"],ad:["5","Administrative Assisting"],cs:["6","Communication and Customer Service"],law:["7","Medical Law and Ethics"]};
 function examSetup(){
   clearInterval(timer);clearInterval(etimer);R=null;E=null;show("play");
   var h='<div class="pbar"><button class="quit" id="quitBtn" aria-label="Back to the map">✕</button><b class="clock">Final boss · Mock exam</b></div>';
-  h+='<div class="qcard"><div><div class="qtext">Exam conditions. No hints until you hand it in.</div><p class="hint">Multiple choice only, spread across topics the way the real exam is, at the real pace of one minute per question. Flag anything you are unsure of and come back to it.</p></div><div class="mascot sm">'+beat("wow")+"</div></div>";
-  h+='<div class="opts"><button class="opt c2 choice" data-exam="25"><span><b>Quick check</b>25 questions · 25 minutes</span></button><button class="opt c4 choice" data-exam="50"><span><b>Half exam</b>50 questions · 50 minutes</span></button></div>';
+  h+='<div class="qcard"><div><div class="qtext">Exam conditions. No hints until you hand it in.</div><p class="hint">Multiple choice only, in the same section order and proportions as the official outline, at one minute per question. Flag anything you are unsure of and come back to it.</p></div><div class="mascot sm">'+beat("wow")+"</div></div>";
+  h+='<div class="opts"><button class="opt c2 choice" data-exam="25"><span><b>Quick check</b>25 questions · 25 minutes</span></button><button class="opt c4 choice" data-exam="50"><span><b>Half exam</b>50 questions · 50 minutes</span></button><button class="opt c1 choice" data-exam="150"><span><b>Full exam</b>150 questions · 150 minutes</span></button></div>';
+  h+='<div class="panel"><h2>Exam order</h2><p class="hint">Questions come section by section, in the order of the official CCMA outline. These are the counts on the full exam. Shorter exams keep the same order and proportions.</p><ul class="outl">';
+  order12().forEach(function(id){if(id==="iv")h+="<li><span>3. Clinical Patient Care</span><b>84</b></li>";h+='<li'+(SEC[id][0].length>1?' class="sub"':"")+"><span>"+(SEC[id][0].length>1?SEC[id][0].charAt(1):SEC[id][0])+". "+SEC[id][1]+"</span><b>"+TRACKS[id].w+"</b></li>";});
+  h+="<li><span><b>Total</b></span><b>150</b></li></ul></div>";
   if(S.mock.length){h+='<div class="panel"><h2>Your last attempts</h2><div class="drows">';S.mock.slice(-4).reverse().forEach(function(m){h+='<div class="drow"><span>'+m.n+" questions</span><b>"+m.pct+'%</b><span class="bar"><i class="'+(m.pct>=80?"hi":m.pct>=60?"mid":"lo")+'" style="width:'+m.pct+'%"></i></span></div>';});h+="</div></div>";}
   $("play").innerHTML=h;
 }
@@ -1969,7 +1974,7 @@ function testSetup(k){
 function examStart(n,k){
   var items=[];if(k==="pt")items=shuffle(PT).slice(0,n);
   else{var ids=k?tinfo(k).ids:order12(),q=quota(n,ids);ids.forEach(function(id){items=items.concat(shuffle(byTrack[id].filter(function(x){return x.t==="mc";})).slice(0,q[id]));});}
-  items=shuffle(items);
+  if(k==="pt")items=shuffle(items);
   E={items:items,opts:items.map(function(x){return shuffle(x.a);}),ans:[],flag:{},i:0,k:k||null,T:items.length*60,t:items.length*60,startL:lvl(S.xp).L,startXp:S.xp,startRd:readiness()};
   clearInterval(etimer);etimer=setInterval(function(){if(!E)return clearInterval(etimer);E.t--;var c=$("exClock"),b=$("exBar");if(c)c.textContent=clock(E.t);if(b)b.style.width=Math.max(0,E.t/E.T*100)+"%";if(E.t<=0)examSubmit();},1000);
   examRender();
@@ -1980,11 +1985,12 @@ function examRender(){
   var dn=n-left,pc=Math.round(dn/n*100);
   h+='<div class="exprog" role="progressbar" aria-label="Exam progress" aria-valuemin="0" aria-valuemax="'+n+'" aria-valuenow="'+dn+'"><div class="exprog-t"><span>'+(E.k==="pt"?"Pre-Test 2026 \u00B7 ":"")+dn+" of "+n+' answered</span><b>'+pc+'% complete</b></div><div class="exprog-bar"><i style="width:'+pc+'%"></i></div></div>';
   h+='<div class="exhead"><b>Question '+(E.i+1)+" of "+n+'</b><button class="flagbtn" id="exFlag" aria-pressed="'+(!!E.flag[E.i])+'">'+(E.flag[E.i]?"Flagged":"Flag for review")+"</button></div>";
-  h+='<div class="qcard"><div><div class="qtext">'+esc(q.q)+"</div></div></div>";
+  var sc=E.k!=="pt"&&SEC[q.d]?SEC[q.d]:null;
+  h+='<div class="qcard"><div>'+(sc?'<div class="qtag"><em>Section '+sc[0]+"</em>"+esc(sc[1])+"</div>":"")+'<div class="qtext">'+esc(q.q)+"</div></div></div>";
   h+='<div class="opts ex">';E.opts[E.i].forEach(function(a,j){h+='<button class="opt'+(E.ans[E.i]===j?" pick":"")+'" data-pick="'+j+'"><kbd>'+"ABCD".charAt(j)+"</kbd><span>"+esc(a)+"</span></button>";});h+="</div>";
   h+='<div class="exnav"><button class="btn ghost" id="exBack"'+(E.i?"":" disabled")+'>Back</button><button class="btn" id="exNext"'+(E.i<n-1?"":" disabled")+">Next</button></div>";
   h+='<div class="panel"><h2>All questions</h2><div class="qgrid">';
-  for(i=0;i<n;i++)h+='<button data-go="'+i+'" class="'+(E.ans[i]!=null?"a":"")+(E.flag[i]?" f":"")+(i===E.i?" c":"")+'" aria-label="Question '+(i+1)+(E.ans[i]!=null?", answered":", not answered")+(E.flag[i]?", flagged":"")+'">'+(i+1)+"</button>";
+  for(i=0;i<n;i++)h+=(E.k!=="pt"&&SEC[E.items[i].d]&&(!i||E.items[i-1].d!==E.items[i].d)?'<div class="sh">'+SEC[E.items[i].d][0]+". "+esc(SEC[E.items[i].d][1])+"</div>":"")+'<button data-go="'+i+'" class="'+(E.ans[i]!=null?"a":"")+(E.flag[i]?" f":"")+(i===E.i?" c":"")+'" aria-label="Question '+(i+1)+(E.ans[i]!=null?", answered":", not answered")+(E.flag[i]?", flagged":"")+'">'+(i+1)+"</button>";
   h+='</div><p class="hint">Filled means answered. A gold bar means flagged.</p><button class="btn big" id="exSubmit">'+(left?"Hand it in with "+left+" unanswered":"Hand in the exam")+"</button></div>";
   $("play").innerHTML=h;
 }
@@ -2047,7 +2053,6 @@ $("modes").addEventListener("click",function(ev){var b=ev.target.closest("[data-
 $("swatches").addEventListener("click",function(ev){var b=ev.target.closest("[data-scrub]");if(!b||b.disabled)return;S.scrub=b.dataset.scrub;save();sfx("tap");renderHome();});
 $("map").addEventListener("click",function(ev){var b=ev.target.closest("[data-track],[data-mode],[data-test]");if(!b)return;if(b.dataset.test)testSetup(b.dataset.test);else if(b.dataset.mode)examSetup();else start("track",b.dataset.track);});
 $("soundBtn").addEventListener("click",function(){S.sound=!S.sound;save();renderHome();sfx("tap");});
-document.querySelector(".seg").addEventListener("click",function(ev){var b=ev.target.closest("[data-len]");if(!b)return;S.len=+b.dataset.len;save();renderHome();});
 var armed=0;
 $("resetBtn").addEventListener("click",function(){var b=$("resetBtn");
   if(Date.now()-armed<4000){try{localStorage.removeItem(KEY);}catch(e){}S={rev:(S.rev||0)+1,intro:1,xp:0,streak:0,last:"",day:{d:dayStr(),rounds:0},q:{},sound:S.sound,len:S.len,best:0,scrub:"teal",bossBest:0,days:[],mock:[],boss:{},calm:S.calm};b.textContent="Progress reset";renderHome();armed=0;}
