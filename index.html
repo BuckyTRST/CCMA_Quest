@@ -1274,6 +1274,11 @@ function mtQ(m){
 }
 function mtMisses(){return MT.filter(function(m){return S.q[m.id]&&S.q[m.id].w;});}
 function isSet(q){return q.d==="pt"||q.d==="mt";}
+/* outline section of each pre-test question, sorted by hand */
+(function(){var m={};"pa1:iv pa2:gc pa3:gc pa4:iv pa5:ph pa6:lab pa7:gc pa8:ic pa9:ad pa10:ad pa11:cs pa12:cc pa13:ic pa14:ad pa15:ic pa16:iv pa17:fk pa18:cc pa19:lab pa20:fk pa21:gc pa22:ad pa23:ekg pa24:cc pa25:fk pa26:ic pa27:iv pa28:ph pa29:ad pa30:gc pa31:gc pa32:ap pa33:ic pa34:fk pa35:ad pa36:ap pa37:ic pa38:lab pa39:gc pa40:fk pa41:gc pa42:ad pa43:iv pa44:ad pa45:fk pa46:gc pa47:gc pa48:ap pa49:ad pa50:lab pa51:cc pa52:ekg pa53:gc pa54:ph pa55:cs pa56:fk pa57:iv pa58:iv pa59:ic pa60:cs pa61:ic pa62:fk pa63:fk pa64:iv pa65:ic pa66:law pa67:law pa68:gc pa69:law pa70:cs pa71:ph pa72:cc pa73:lab pa74:cs pa75:gc pa76:ph pa77:ic pa78:ekg pa79:gc pa80:ic pa81:lab pa82:fk pa83:law pa84:iv pa85:gc pa86:fk pa87:gc pa88:gc pa89:law pa90:gc pa91:fk pa92:ic pa93:cs pa94:gc pa95:gc pa96:gc pa97:ad pa98:iv pa99:cc pa100:ic pa101:cc pa102:gc pa103:ad pa104:law pa105:ph pa106:ekg pa107:lab pa108:lab pa109:lab pa110:iv pa111:ic pa112:ekg pa113:ph pa114:ap pa115:cc pa116:cc pa117:ph pa118:ekg pa119:lab pa120:ph pa121:ic pa122:law pa123:iv pa124:ad pa125:fk pa126:gc pa127:ad pa128:gc pa129:iv pa130:ic pa131:iv pa132:cc pa133:ph pa134:cc pa135:law pa136:ic pa137:ph pa138:iv pa139:iv pa140:gc pa141:cs pa142:ic pa143:gc pa144:cc pa145:ph pa146:cc pa147:gc pa148:gc pa149:lab pa150:law pa151:ad pa152:ic pa153:ph pa154:law pa155:iv pa156:fk pa157:ekg pa158:ph pa159:gc pa160:ic pa161:ic pa162:gc pa163:ic pa164:iv pa165:gc pa166:fk pa167:cc pa168:gc pa169:cc pa170:ic pa171:gc pa172:law pa173:ic pa174:ad pa175:ekg pa176:cc pa177:gc pa178:cs pa179:ad pa180:ad pb1:ic pb2:lab pb5:ic pb6:iv pb7:gc pb9:ekg pb13:iv pb14:cs pb15:fk pb16:ad pb17:iv pb18:lab pb19:fk pb20:cs pb21:ad pb24:iv pb25:gc pb26:cc pb27:cc pb28:ic pb29:law pb30:ad pb31:gc pb32:gc pb35:lab pb36:gc pb38:gc pb39:ph pb40:gc pb41:cs pb42:iv pb43:cs pb45:law pb46:gc pb47:law pb48:iv pb49:iv pb50:fk pb51:cs pb52:cc pb53:fk pb54:ic pb56:fk pb57:gc pb58:gc pb59:fk pb60:ap pb61:ekg pb62:ic pb64:cc pb65:gc pb66:ic pb68:cc pb69:lab pb70:cs pb71:ekg pb72:iv pb73:ekg pb74:cs pb75:ekg pb76:ph pb77:cc pb78:ph pb79:ic pb80:cc pb81:gc pb82:ad pb83:fk pb84:ic pb87:ad pb88:ad pb90:ic pb91:gc pb92:iv pb93:cc pb95:ph pb96:ic pb97:ad pb99:ad pb100:cc pb101:gc pb102:iv pb103:ph pb104:gc pb105:iv pb106:ad pb107:ap pb108:ic pb109:ic pb110:ad pb111:lab pb112:cc pb115:fk pb117:cc pb118:ph pb119:law pb120:cc pb121:cs pb122:ph pb123:fk pb124:gc pb125:ic pb126:gc pb128:ic pb129:gc pb130:cs pb131:ic pb132:iv pb133:lab pb134:ad pb135:ic pb136:gc pb137:gc pb138:cc pb139:gc pb140:iv pb141:gc pb142:ap pb143:fk pb144:gc pb145:ic pb147:gc pb148:law pb149:gc pb150:ap pb152:ph pb153:ekg pb154:cc pb157:gc pb162:fk pb167:ap pb168:cc pc1:fk pc2:gc pc3:ic pc4:gc pc5:ad pc6:fk pc7:law pc8:ap pc9:cs pc10:ad pc11:lab pc12:ph pc13:ad pc14:iv pc15:law pc16:ph pc17:ph pc19:ad pc20:lab pc21:ic pc22:ad pc23:fk pc24:gc pc25:lab pc27:ic pc28:gc pc29:cs pc30:ic pc31:cs pc33:law pc34:gc pc35:ph pc36:law pc37:ph pc38:iv pc39:ad pc40:ph pc41:ic pc42:fk pc43:gc pc44:ad pc45:ph pc46:ad pc47:gc pc48:cs pc49:cc pc50:ph pc51:gc pc52:ic pc53:cs pc54:ph pc55:lab pc56:gc pc57:cc pc58:cs pc59:iv pc60:lab pc61:law pc62:ad pc63:cc pc64:ph pc65:gc pc66:gc pc67:ad pc68:ad pc69:ad pc70:ph pc71:cs pc72:ekg pc73:law pc74:gc pc75:ph pc76:cs pc77:ic pc78:iv pc79:lab pc80:ekg pc81:ic pc82:gc pc83:cs pc84:ad pc85:ad pc86:iv pc87:gc pc88:law pc89:fk pc91:gc pc92:ic pc93:fk pc94:ic pc95:fk pc96:gc pc97:cc pc98:ap pc99:ph pc100:ic pc101:ic pc102:ad pc103:gc pc104:ad pc105:fk pc106:fk pc107:ph pc108:fk pc109:cc pc110:ap pc111:lab pc112:ekg pc113:cc pc114:ad pc115:ic pc116:law pc117:gc pc118:iv pc119:ad pc120:ap pc121:lab pc122:gc pc123:gc pc124:fk pc125:ap pc127:cc pc128:lab pc129:ad pc130:iv pc131:law pc132:cc pc133:gc pc134:iv pc135:ic pc136:fk pc137:gc pc138:ic pc139:gc pc140:ad pc141:law pc142:fk pc143:iv pc144:gc pc145:ad pc147:iv pc148:law pc149:ic pc150:ic pc151:cc pc152:ic pc153:ic pc154:law pc155:gc pc156:lab pc157:ad pc158:cs pc159:lab pc160:iv pc161:lab pc162:lab pc163:law pc164:law pc166:gc pc168:iv pc171:ad pc172:ic pc173:ad pc176:cs pc177:cs pc178:ph pc179:iv pc180:law pc1751:ic ps1:cs ps2:iv ps3:ap ps4:ic ps5:iv ps6:gc ps7:gc ps8:cs ps9:gc ps10:ph ps11:ic ps12:iv ps13:ic ps14:cs ps15:gc ps16:ad ps17:gc ps18:ic ps19:cc ps20:ic ps21:ic ps22:ic ps23:iv ps24:ad ps25:cc ps26:ic".split(" ").forEach(function(x){var a=x.split(":");m[a[0]]=a[1];});PT.forEach(function(q){q.sec=m[q.id]||"gc";});})();
+function secOf(q){return q.sec||q.d;}
+function ptSub(t){return !t?PT:t.slice(0,4)==="sec:"?PT.filter(function(q){return q.sec===t.slice(4);}):PT.filter(function(q){return q.src===t;});}
+function ptSubName(t){return t&&t.slice(0,4)==="sec:"?SEC[t.slice(4)][1]:t;}
 var PTSRC=["Pre-Test A","Pre-Test July","Pre-Test C","Short Pre-Test"];
 function ptMisses(){return PT.filter(function(q){return S.q[q.id]&&S.q[q.id].w;});}
 var PT_DONE=3;/* right this many times in a row and a pre-test question retires from practice */
@@ -1475,9 +1480,11 @@ function renderPT(){
   h+='<p class="sub">Every question from the CCMA Pre-Test 2026 papers in one study set, kept apart from the quest. Each answer explains why it is right.</p>';
   var lv=ptLive(PT).length;
   h+='<div class="pt-prog" role="progressbar" aria-label="Pre-test questions cleared" aria-valuemin="0" aria-valuemax="'+n+'" aria-valuenow="'+ms+'"><div class="lvl-row"><span><b>'+ms+" of "+n+"</b> cleared</span><span>"+sn+" seen"+(last?" \u00B7 last mock "+last.pct+"%":"")+'</span></div><span class="bar"><i data-w="'+Math.round(ms/n*100)+'" style="width:0%"></i></span><small>Get a question right '+PT_DONE+' times in a row and it shows up less each time, then stops showing up. A miss brings it back.</small></div>';
-  h+='<div class="pt-go"><button class="btn pt-all" data-pt="all"'+(lv?"":" disabled")+'>Practice battle<small>'+(lv?lv+" questions left":"All cleared")+'</small></button><button class="btn pt-mock" data-pt="mock">Mock exam<small>With a progress bar</small></button></div>';
+  h+='<div class="pt-go"><button class="btn pt-all" data-pt="all"'+(lv?"":" disabled")+'>Practice battle<small>'+(lv?"10 questions \u00B7 "+lv+" left":"All cleared")+'</small></button><button class="btn pt-mock" data-pt="mock">Mock exam<small>Up to 180, in outline order</small></button></div>';
   h+='<button class="btn ghost" data-pt="miss"'+(mi?"":" disabled")+">"+(mi?"Rematch "+mi+" missed pre-test question"+(mi===1?"":"s"):"No pre-test misses yet")+"</button>";
-  h+='<div class="sub">Study one paper</div><div class="pt-papers">';
+  h+='<div class="sub">Study one section \u00B7 10-question battles</div><div class="pt-papers">';
+  order12().forEach(function(id){var all=ptSub("sec:"+id),c=all.length,d=ptCleared(all);h+='<button class="pt-paper" data-ptsrc="sec:'+id+'"'+(d>=c?" disabled":"")+'><span class="lvl-row"><b>'+SEC[id][0]+". "+esc(SEC[id][1])+"</b><span>"+(d>=c?"All cleared":d+" / "+c+" cleared")+'</span></span><span class="bar"><i data-w="'+Math.round(d/c*100)+'" style="width:0%"></i></span></button>';});
+  h+='</div><div class="sub">Study one paper \u00B7 10-question battles</div><div class="pt-papers">';
   PTSRC.forEach(function(s){var all=PT.filter(function(q){return q.src===s;}),c=all.length,d=ptCleared(all);h+='<button class="pt-paper" data-ptsrc="'+esc(s)+'"'+(d>=c?" disabled":"")+'><span class="lvl-row"><b>'+esc(s)+"</b><span>"+(d>=c?"All cleared":d+" / "+c+" cleared")+'</span></span><span class="bar"><i data-w="'+Math.round(d/c*100)+'" style="width:0%"></i></span></button>';});
   $("ptset").innerHTML=h+"</div>";
 }
@@ -1487,7 +1494,7 @@ function renderMT(){
   h+='<div class="pt-h"><h2>Med Terms</h2><span class="pt-n">'+n+' word parts</span></div>';
   h+='<p class="sub">Prefixes, suffixes and root words: the building blocks of every medical term. Flip the flashcards to learn them, then battle the Syllable Squid to lock them in.</p>';
   h+='<div class="pt-prog" role="progressbar" aria-label="Word parts cleared" aria-valuemin="0" aria-valuemax="'+n+'" aria-valuenow="'+ms+'"><div class="lvl-row"><span><b>'+ms+" of "+n+"</b> cleared in battle</span><span>"+fk+' known on cards</span></div><span class="bar"><i data-w="'+Math.round(ms/n*100)+'" style="width:0%"></i></span><small>Get a word part right '+PT_DONE+' times in a row and it is cleared. Each time it is asked a different way. A miss brings it back.</small></div>';
-  h+='<div class="pt-go"><button class="btn pt-mock" data-mt="cards">Flashcards<small>10 cards, tap to flip</small></button><button class="btn pt-all" data-mt="all"'+(lv?"":" disabled")+'>Practice battle<small>'+(lv?lv+" word parts left":"All cleared")+'</small></button></div>';
+  h+='<div class="pt-go"><button class="btn pt-mock" data-mt="cards">Flashcards<small>10 cards, tap to flip</small></button><button class="btn pt-all" data-mt="all"'+(lv?"":" disabled")+'>Practice battle<small>'+(lv?"10 questions \u00B7 "+lv+" left":"All cleared")+'</small></button></div>';
   h+='<button class="btn ghost" data-mt="miss"'+(mi?"":" disabled")+">"+(mi?"Rematch "+mi+" missed word part"+(mi===1?"":"s"):"No missed word parts yet")+"</button>";
   h+='<div class="sub">Study one group</div><div class="pt-papers">';
   MTK.forEach(function(s){var all=MT.filter(function(m){return m.src===s;}),c=all.length,d=ptCleared(all);h+='<div class="pt-paper'+(d>=c?" full":"")+'"><span class="lvl-row"><b>'+s+" · "+c+"</b><span>"+(d>=c?"All cleared":d+" / "+c+" cleared")+'</span></span><span class="bar"><i data-w="'+Math.round(d/c*100)+'" style="width:0%"></i></span><span class="mt-acts"><button data-mtcards="'+s+'">Flashcards</button><button data-mtsrc="'+s+'"'+(d>=c?" disabled":"")+">Battle</button></span></div>";});
@@ -1529,8 +1536,9 @@ function fcClick(b){
 function ptSetup(){
   clearInterval(timer);clearInterval(etimer);R=null;E=null;show("play");
   var n=PT.length,h='<div class="pbar"><button class="quit" id="quitBtn" aria-label="Back to the map">\u2715</button><b class="clock">Pre-Test 2026 \u00B7 Mock exam</b></div>';
-  h+='<div class="qcard"><div><div class="qtext">Pre-Test 2026 mock exam.</div><p class="hint">Questions only from the pre-test papers, at one minute per question. A progress bar shows how much you have answered. No hints until you hand it in, then every miss comes with its explanation.</p></div><div class="mascot sm">'+beat("wow")+"</div></div>";
+  h+='<div class="qcard"><div><div class="qtext">Pre-Test 2026 mock exam.</div><p class="hint">Questions only from the pre-test papers, section by section in the order of the official outline, at one minute per question. A progress bar shows how much you have answered. No hints until you hand it in, then every miss comes with its explanation.</p></div><div class="mascot sm">'+beat("wow")+"</div></div>";
   h+='<div class="opts"><button class="opt c2 choice" data-ptexam="25"><span><b>Quick check</b>25 questions \u00B7 25 minutes</span></button><button class="opt c1 choice" data-ptexam="50"><span><b>Half exam</b>50 questions \u00B7 50 minutes</span></button><button class="opt c3 choice" data-ptexam="100"><span><b>Long exam</b>100 questions \u00B7 100 minutes</span></button><button class="opt c4 choice" data-ptexam="180"><span><b>Full length</b>180 questions \u00B7 3 hours, like test day</span></button></div>';
+  h+=outlineHtml();
   var pm=S.ptm||[];
   if(pm.length){h+='<div class="panel"><h2>Your last attempts</h2><div class="drows">';pm.slice(-4).reverse().forEach(function(m){h+='<div class="drow"><span>'+m.n+" questions</span><b>"+m.pct+'%</b><span class="bar"><i class="'+(m.pct>=80?"hi":m.pct>=60?"mid":"lo")+'" style="width:'+m.pct+'%"></i></span></div>';});h+="</div></div>";}
   $("play").innerHTML=h;
@@ -1583,14 +1591,14 @@ function start(mode,track,road){F=null;S.seq=(S.seq||0)+1;
   else if(mode==="miss")items=shuffle(misses()).slice(0,Math.max(S.len,5));
   else if(mode==="due")items=shuffle(dueQs()).slice(0,10);
   else if(mode==="track"){pool=byTrack[track];items=pick(pool,pool.length,false);}
-  else if(mode==="pt"){var ptAll=track?PT.filter(function(q){return q.src===track;}):PT;pool=ptLive(ptAll);if(!pool.length)return;items=pick(pool,pool.length,false);}
+  else if(mode==="pt"){var ptAll=ptSub(track);pool=ptLive(ptAll);if(!pool.length)return;items=pick(pool,pool.length,false);}
   else if(mode==="ptmiss")items=shuffle(ptMisses()).slice(0,Math.max(S.len,8));
   else if(mode==="mt"){var mtAll=track?MT.filter(function(m){return m.src===track;}):MT;pool=ptLive(mtAll).map(mtQ);if(!pool.length)return;items=pick(pool,pool.length,false);}
   else if(mode==="mtmiss")items=shuffle(mtMisses()).slice(0,Math.max(S.len,8)).map(mtQ);
   else{pool=Q;items=pick(Q,24,true);}
   if(!items.length)return;
   R={mode:mode,track:track,items:items,i:0,ok:0,combo:0,best:0,xp:0,log:[],res:[],startL:lvl(S.xp).L,startXp:S.xp,startRd:readiness(),T:mode==="boss"?600:60,done:0};
-  R.t=R.T;R.road=!!road;if(mode==="pt")R.ptAll=track?PT.filter(function(q){return q.src===track;}):PT;if(mode==="mt")R.ptAll=track?MT.filter(function(m){return m.src===track;}):MT;R.startM=mode==="track"&&track?mastery(track):0;E=null;clearInterval(etimer);show("play");clearInterval(timer);
+  R.t=R.T;R.road=!!road;if(mode==="pt")R.ptAll=ptSub(track);if(mode==="mt")R.ptAll=track?MT.filter(function(m){return m.src===track;}):MT;R.startM=mode==="track"&&track?mastery(track):0;E=null;clearInterval(etimer);show("play");clearInterval(timer);
   if(pool){var L=lvl(S.xp).L,stt=stats(L),bs=mode==="track"&&bossReady(track),eid=mode==="track"?track:mode==="pt"?"pt":mode==="mt"?"mt":"mix",ch={};
     ABIL.forEach(function(a){if(L>=a.L)ch[a.id]=stt.ch;});
     R.pool=pool;R.battle={id:eid,name:(bs?"Mega ":"")+ENEMY[eid][0],boss:bs,emax:bs?120:10*stt.dmg,php:stt.hp,pmax:stt.hp,dmg:stt.dmg,g:0,gmax:bs?25:40,ch:ch,lost:0};R.battle.ehp=R.battle.emax;}
@@ -1614,7 +1622,7 @@ function record(q,ok){
   setMood(ok?(R.combo>=3?"wow":"happy"):"sad",ok?"jump":"droop");
   if(ok&&(R.combo===3||R.combo===5||R.combo===8||R.combo===12))burst(R.combo);
   if(R.battle){var B=R.battle;
-    if(ok){var dm=B.dmg+Math.min(R.combo-1,3)*2;if(B.power){dm*=2;B.power=false;}var pw=dm>=B.dmg*2;B.ehp=Math.max(0,B.ehp-dm);anim($("pm"),"strike");
+    if(ok){var dm=B.dmg+(B.boss?Math.min(R.combo-1,3)*2:0);if(B.power){dm*=2;B.power=false;}var pw=dm>=B.dmg*2;B.ehp=Math.max(0,B.ehp-dm);anim($("pm"),"strike");
       (function(dm,pw,ko){shot("pm","foe",pw?"pow":"me","",function(){if(!R||R.battle!==B)return;floatTxt("foe","-"+dm);anim($("foe"),ko?"dead":"hit");boomAt("foe",ko?"ko":pw?"big":"hit");if(pw||ko)buzz(40);});})(dm,pw,B.ehp<=0);}
     else takeHit();
     hud();}
@@ -1952,14 +1960,16 @@ function renderRoad(){
 var E=null,etimer=null,qarm=0;
 function quota(n,ids){var out={},fr=[],sum=0,W=0;ids=ids||order12();ids.forEach(function(id){W+=TRACKS[id].w;});ids.forEach(function(id){var raw=TRACKS[id].w/W*n,f=Math.floor(raw);out[id]=f;sum+=f;fr.push([raw-f,id]);});fr.sort(function(a,b){return b[0]-a[0];});for(var i=0;sum<n;i++,sum++)out[fr[i%fr.length][1]]++;return out;}
 var SEC={fk:["1","Foundational Knowledge and Basic Science"],ap:["2","Anatomy and Physiology"],iv:["3A","Patient Intake and Vitals"],gc:["3B","General Patient Care"],ic:["3C","Infection Control and Safety"],lab:["3D","Point of Care Testing and Laboratory Procedures"],ph:["3E","Phlebotomy"],ekg:["3F","EKG and Cardiovascular Testing"],cc:["4","Patient Care Coordination and Education"],ad:["5","Administrative Assisting"],cs:["6","Communication and Customer Service"],law:["7","Medical Law and Ethics"]};
+function outlineHtml(){var q=quota(180),c3=0;["iv","gc","ic","lab","ph","ekg"].forEach(function(id){c3+=q[id];});
+  var h='<div class="panel"><h2>Exam order</h2><p class="hint">Questions come section by section, in the order of the official CCMA outline. These are the counts on the full 180-question exam: the outline\u2019s 150 scaled up evenly, so every section keeps its share. Shorter exams keep the same order and shares.</p><ul class="outl">';
+  order12().forEach(function(id){if(id==="iv")h+="<li><span>3. Clinical Patient Care</span><b>"+c3+"</b></li>";h+='<li'+(SEC[id][0].length>1?' class="sub"':"")+"><span>"+(SEC[id][0].length>1?SEC[id][0].charAt(1):SEC[id][0])+". "+SEC[id][1]+"</span><b>"+q[id]+"</b></li>";});
+  return h+"<li><span><b>Total</b></span><b>180</b></li></ul></div>";}
 function examSetup(){
   clearInterval(timer);clearInterval(etimer);R=null;E=null;show("play");
   var h='<div class="pbar"><button class="quit" id="quitBtn" aria-label="Back to the map">✕</button><b class="clock">Final boss · Mock exam</b></div>';
   h+='<div class="qcard"><div><div class="qtext">Exam conditions. No hints until you hand it in.</div><p class="hint">Multiple choice only, in the same section order and proportions as the official outline, at one minute per question. Flag anything you are unsure of and come back to it.</p></div><div class="mascot sm">'+beat("wow")+"</div></div>";
-  h+='<div class="opts"><button class="opt c2 choice" data-exam="25"><span><b>Quick check</b>25 questions · 25 minutes</span></button><button class="opt c4 choice" data-exam="50"><span><b>Half exam</b>50 questions · 50 minutes</span></button><button class="opt c1 choice" data-exam="150"><span><b>Full exam</b>150 questions · 150 minutes</span></button></div>';
-  h+='<div class="panel"><h2>Exam order</h2><p class="hint">Questions come section by section, in the order of the official CCMA outline. These are the counts on the full exam. Shorter exams keep the same order and proportions.</p><ul class="outl">';
-  order12().forEach(function(id){if(id==="iv")h+="<li><span>3. Clinical Patient Care</span><b>84</b></li>";h+='<li'+(SEC[id][0].length>1?' class="sub"':"")+"><span>"+(SEC[id][0].length>1?SEC[id][0].charAt(1):SEC[id][0])+". "+SEC[id][1]+"</span><b>"+TRACKS[id].w+"</b></li>";});
-  h+="<li><span><b>Total</b></span><b>150</b></li></ul></div>";
+  h+='<div class="opts"><button class="opt c2 choice" data-exam="25"><span><b>Quick check</b>25 questions · 25 minutes</span></button><button class="opt c4 choice" data-exam="50"><span><b>Half exam</b>50 questions · 50 minutes</span></button><button class="opt c1 choice" data-exam="180"><span><b>Full exam</b>180 questions · 3 hours</span></button></div>';
+  h+=outlineHtml();
   if(S.mock.length){h+='<div class="panel"><h2>Your last attempts</h2><div class="drows">';S.mock.slice(-4).reverse().forEach(function(m){h+='<div class="drow"><span>'+m.n+" questions</span><b>"+m.pct+'%</b><span class="bar"><i class="'+(m.pct>=80?"hi":m.pct>=60?"mid":"lo")+'" style="width:'+m.pct+'%"></i></span></div>';});h+="</div></div>";}
   $("play").innerHTML=h;
 }
@@ -1972,9 +1982,10 @@ function testSetup(k){
   $("play").innerHTML=h;
 }
 function examStart(n,k){
-  var items=[];if(k==="pt")items=shuffle(PT).slice(0,n);
-  else{var ids=k?tinfo(k).ids:order12(),q=quota(n,ids);ids.forEach(function(id){items=items.concat(shuffle(byTrack[id].filter(function(x){return x.t==="mc";})).slice(0,q[id]));});}
-  if(k==="pt")items=shuffle(items);
+  var items=[],ids=k&&k!=="pt"?tinfo(k).ids:order12(),q=quota(n,ids),used={};
+  var got=ids.map(function(id){var own=k==="pt"?[]:shuffle(byTrack[id].filter(function(x){return x.t==="mc";})),ex=k==="pt"||!k?shuffle(ptSub("sec:"+id)):[],l=own.concat(ex).slice(0,q[id]);l.forEach(function(x){used[x.id]=1;});return l;});
+  if(k==="pt"){var short=n-got.reduce(function(a,l){return a+l.length;},0),rest=shuffle(PT.filter(function(x){return !used[x.id];}));ids.forEach(function(id,i){while(short>0){var j=-1;for(var z=0;z<rest.length;z++)if(rest[z].sec===id){j=z;break;}if(j<0)break;got[i].push(rest.splice(j,1)[0]);short--;}});}
+  got.forEach(function(l){items=items.concat(l);});
   E={items:items,opts:items.map(function(x){return shuffle(x.a);}),ans:[],flag:{},i:0,k:k||null,T:items.length*60,t:items.length*60,startL:lvl(S.xp).L,startXp:S.xp,startRd:readiness()};
   clearInterval(etimer);etimer=setInterval(function(){if(!E)return clearInterval(etimer);E.t--;var c=$("exClock"),b=$("exBar");if(c)c.textContent=clock(E.t);if(b)b.style.width=Math.max(0,E.t/E.T*100)+"%";if(E.t<=0)examSubmit();},1000);
   examRender();
@@ -1985,12 +1996,12 @@ function examRender(){
   var dn=n-left,pc=Math.round(dn/n*100);
   h+='<div class="exprog" role="progressbar" aria-label="Exam progress" aria-valuemin="0" aria-valuemax="'+n+'" aria-valuenow="'+dn+'"><div class="exprog-t"><span>'+(E.k==="pt"?"Pre-Test 2026 \u00B7 ":"")+dn+" of "+n+' answered</span><b>'+pc+'% complete</b></div><div class="exprog-bar"><i style="width:'+pc+'%"></i></div></div>';
   h+='<div class="exhead"><b>Question '+(E.i+1)+" of "+n+'</b><button class="flagbtn" id="exFlag" aria-pressed="'+(!!E.flag[E.i])+'">'+(E.flag[E.i]?"Flagged":"Flag for review")+"</button></div>";
-  var sc=E.k!=="pt"&&SEC[q.d]?SEC[q.d]:null;
+  var sc=SEC[secOf(q)]||null;
   h+='<div class="qcard"><div>'+(sc?'<div class="qtag"><em>Section '+sc[0]+"</em>"+esc(sc[1])+"</div>":"")+'<div class="qtext">'+esc(q.q)+"</div></div></div>";
   h+='<div class="opts ex">';E.opts[E.i].forEach(function(a,j){h+='<button class="opt'+(E.ans[E.i]===j?" pick":"")+'" data-pick="'+j+'"><kbd>'+"ABCD".charAt(j)+"</kbd><span>"+esc(a)+"</span></button>";});h+="</div>";
   h+='<div class="exnav"><button class="btn ghost" id="exBack"'+(E.i?"":" disabled")+'>Back</button><button class="btn" id="exNext"'+(E.i<n-1?"":" disabled")+">Next</button></div>";
   h+='<div class="panel"><h2>All questions</h2><div class="qgrid">';
-  for(i=0;i<n;i++)h+=(E.k!=="pt"&&SEC[E.items[i].d]&&(!i||E.items[i-1].d!==E.items[i].d)?'<div class="sh">'+SEC[E.items[i].d][0]+". "+esc(SEC[E.items[i].d][1])+"</div>":"")+'<button data-go="'+i+'" class="'+(E.ans[i]!=null?"a":"")+(E.flag[i]?" f":"")+(i===E.i?" c":"")+'" aria-label="Question '+(i+1)+(E.ans[i]!=null?", answered":", not answered")+(E.flag[i]?", flagged":"")+'">'+(i+1)+"</button>";
+  for(i=0;i<n;i++)h+=(SEC[secOf(E.items[i])]&&(!i||secOf(E.items[i-1])!==secOf(E.items[i]))?'<div class="sh">'+SEC[secOf(E.items[i])][0]+". "+esc(SEC[secOf(E.items[i])][1])+"</div>":"")+'<button data-go="'+i+'" class="'+(E.ans[i]!=null?"a":"")+(E.flag[i]?" f":"")+(i===E.i?" c":"")+'" aria-label="Question '+(i+1)+(E.ans[i]!=null?", answered":", not answered")+(E.flag[i]?", flagged":"")+'">'+(i+1)+"</button>";
   h+='</div><p class="hint">Filled means answered. A gold bar means flagged.</p><button class="btn big" id="exSubmit">'+(left?"Hand it in with "+left+" unanswered":"Hand in the exam")+"</button></div>";
   $("play").innerHTML=h;
 }
@@ -2006,7 +2017,7 @@ function examClick(b){
 function examSubmit(){
   clearInterval(etimer);
   var X=E,n=X.items.length,okc=0,tr={},wrong=[];E=null;
-  X.items.forEach(function(q,i){var ch=X.ans[i]!=null?X.opts[i][X.ans[i]]:null,ok=ch===q.a[0],st=S.q[q.id]||(S.q[q.id]={c:0}),gk=q.d==="pt"?q.src:q.d,t=tr[gk]||(tr[gk]={n:0,ok:0});
+  X.items.forEach(function(q,i){var ch=X.ans[i]!=null?X.opts[i][X.ans[i]]:null,ok=ch===q.a[0],st=S.q[q.id]||(S.q[q.id]={c:0}),gk=secOf(q),t=tr[gk]||(tr[gk]={n:0,ok:0});
     t.n++;if(ok){okc++;t.ok++;if(st.w)S.day.fixed=(S.day.fixed||0)+1;st.n=(st.n!=null?st.n:(st.c||0))+1;st.c=Math.min(2,(st.c||0)+1);st.w=0;}else{st.c=0;st.n=0;st.w=1;wrong.push([q,ch]);}sched(st,ok);});
   var pct=Math.round(okc/n*100),gain=okc*8+30;S.xp+=gain;
   var TK=X.k,PTX=TK==="pt",TI=TK&&!PTX?tinfo(TK):null,cpass=false,cfirst=false;
@@ -2023,12 +2034,12 @@ function examSubmit(){
   h+=questHtml(dq);
   if(up)REWARDS.forEach(function(r){if(r.L>X.startL&&r.L<=L.L)h+='<div class="unlock"><span>Level '+r.L+" unlocked: "+esc(r.n)+"</span>"+unlockNote(r)+"</div>";});
   h+='<div class="stats"><div class="stat"><b>'+okc+"/"+n+'</b><span>correct</span></div><div class="stat"><b>'+clock(used)+'</b><span>time used</span></div><div class="stat"><b>'+rd+'%</b><span>exam ready'+(rd>X.startRd?", up "+(rd-X.startRd):"")+"</span></div></div>";
-  h+='<div class="panel"><h2>Score by '+(PTX?"paper":"topic")+'</h2><div class="drows">';
+  h+='<div class="panel"><h2>Score by '+(PTX?"section":"topic")+'</h2><div class="drows">';
   rows.forEach(function(r){h+='<div class="drow"><span>'+esc(TRACKS[r.id]?TRACKS[r.id].n:r.id)+"</span><b>"+r.ok+"/"+r.n+'</b><span class="bar"><i class="'+(r.p>=80?"hi":r.p>=60?"mid":"lo")+'" style="width:'+Math.max(r.p,3)+'%"></i></span></div>';});
   h+="</div></div>";
   if(wrong.length){h+='<details class="review"'+(PTX?" open":"")+'><summary>Review '+wrong.length+(wrong.length===1?" miss":" misses")+"</summary><ul>";
     wrong.forEach(function(w){h+="<li>"+esc(w[0].q)+" <b>Answer: "+esc(w[0].a[0])+".</b><em>"+(w[1]?"You chose: "+esc(w[1])+". "+(whyNot(w[0],w[1])?esc(whyNot(w[0],w[1]))+" ":""):"Not answered. ")+esc(w[0].e)+"</em></li>";});h+="</ul></details>";}
-  h+='<div class="res-btns">'+(function(){var ws=rows.filter(function(r){return r.p<80;}).slice(0,3),o="";if(!ws.length&&weak)ws=[weak];if(ws.length)o+='<p class="hint" style="margin:0">Your weak spots. Battle them while they are fresh.</p>';ws.forEach(function(r,i){o+=PTX?'<button class="btn'+(i?" ghost":" big")+'" data-ptsrc="'+esc(r.id)+'">'+esc(r.id)+" · "+r.p+"%</button>":'<button class="btn'+(i?" ghost":" big")+'" data-prac="'+r.id+'">'+esc(TRACKS[r.id].n)+" · "+r.p+"%</button>";});return o;})()+'<button class="btn'+(weak?" ghost":" big")+'" id="againBtn" data-m="'+(PTX?"ptmock":TK?"test":"mock")+'" data-k="'+(TK||"")+'">'+(PTX?"Take another pre-test mock":TK?(cpass?"Take the test again":"Retake the test"):"Take another mock exam")+"</button>"+'<button class="btn ghost" id="homeBtn">Back to the map</button></div>';
+  h+='<div class="res-btns">'+(function(){var ws=rows.filter(function(r){return r.p<80;}).slice(0,3),o="";if(!ws.length&&weak)ws=[weak];if(ws.length)o+='<p class="hint" style="margin:0">Your weak spots. Battle them while they are fresh.</p>';ws.forEach(function(r,i){o+=PTX?'<button class="btn'+(i?" ghost":" big")+'" data-ptsrc="sec:'+r.id+'">'+esc(SEC[r.id][1])+" · "+r.p+"%</button>":'<button class="btn'+(i?" ghost":" big")+'" data-prac="'+r.id+'">'+esc(TRACKS[r.id].n)+" · "+r.p+"%</button>";});return o;})()+'<button class="btn'+(weak?" ghost":" big")+'" id="againBtn" data-m="'+(PTX?"ptmock":TK?"test":"mock")+'" data-k="'+(TK||"")+'">'+(PTX?"Take another pre-test mock":TK?(cpass?"Take the test again":"Retake the test"):"Take another mock exam")+"</button>"+'<button class="btn ghost" id="homeBtn">Back to the map</button></div>';
   $("result").innerHTML=h;show("result");
   sfx("win");if(pct>=80||up)confetti();
   if(inc)setTimeout(function(){if(!$("result").hidden)streakFx();},reduce?0:1300);
